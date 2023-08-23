@@ -1,0 +1,12 @@
+POST  http://localhost:3003/api/blogs HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJlZSIsImlkIjoiNjRkZjQ4OGE5ZGM5YWNkMDA5MWM1NTY2IiwiaWF0IjoxNjkyMzYwMDIxfQ.lOJKmmf8UPHIXjX4i6-iD9_dsOzgn5tJtoclDsPFELs
+content-type: application/json
+
+{
+    "title": "tekstia",
+    "author": "matti",
+    "url": "reee",
+    "likes": 3
+}
+
+
