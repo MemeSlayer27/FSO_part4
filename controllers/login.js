@@ -40,6 +40,7 @@ loginRouter.post('/', async (request, response, next) => {
         next(error)
     }
 
+    
 })
 
 module.exports = loginRouter
