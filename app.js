@@ -35,17 +35,18 @@ app.use(middleware.requestLogger)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
 
-// Create a router for the routes that require authentication
+if (process.env.NODE_ENV === 'test') {
+    const testingRouter = require('./controllers/testing')
+    app.use('/api/testing', testingRouter)
+}
+
 const authenticatedRoutes = express.Router()
 
-// Apply the token and user extraction middlewares to the authenticated routes
 authenticatedRoutes.use(middleware.tokenExtractor)
 authenticatedRoutes.use(middleware.userExtractor)
 
-// Register the authenticated routes with specific controllers
 authenticatedRoutes.use('/', blogsRouter)
 
-// Now use the authenticated routes in the app
 app.use('/api/blogs', authenticatedRoutes)
 
 app.use(middleware.unknownEndpoint)
