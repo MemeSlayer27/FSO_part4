@@ -4,6 +4,7 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
     {
@@ -44,7 +45,7 @@ const initialBlogs = [
     }  
 ]
 
-const user = {
+const credentials = {
     username: 'ree',
     password: 'reeeeesadjkfaskjdfa'
 }
@@ -55,15 +56,31 @@ const getTokenForUser = async (user) => {
         .send(user) 
         .expect(200)
 
-
-    
     return response.body.token
 }
+
+beforeAll(async () => {
+    await User.deleteMany({})
+
+    const user = {
+        username: "ree",
+        name: "Matti",
+        password: "reeeeesadjkfaskjdfa"
+    }
+
+    await api
+        .post('/api/users')
+        .send(user)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+}, 20000)
+
 
 beforeEach(async () => {
     await Blog.deleteMany({})
 
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
     const blogCreationPromises = initialBlogs.map(blog => 
         api
@@ -81,7 +98,7 @@ beforeEach(async () => {
 test('blogs are returned as json', async () => {
 
 
-    const token = await getTokenForUser(user)
+    const token = await getTokenForUser(credentials)
 
     await api
         .get('/api/blogs')
@@ -92,7 +109,7 @@ test('blogs are returned as json', async () => {
 
 
 test('there are six notes', async () => {
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
     const response = await api
         .get('/api/blogs')
@@ -106,7 +123,7 @@ test('there are six notes', async () => {
 
 test('id named properly', async () => {
 
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
     const response = await api
         .get('/api/blogs')
@@ -128,7 +145,7 @@ test('POST creates a post', async () => {
         likes: 3
     }
 
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
 
     await api
@@ -153,7 +170,7 @@ test('if no likes property, default to zero', async () => {
         url: 'https://reactpatterns.com/',
     }
 
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
     await api
         .post('/api/blogs')
@@ -185,7 +202,7 @@ test('if url or title missing, get status 400', async () => {
         likes: 3
     }
 
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
     await api
         .post('/api/blogs')
@@ -212,7 +229,7 @@ test('delete works as intended', async () => {
     const count = blogs.length
     const id = blogs[0]._id
 
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
     await api
         .delete(`/api/blogs/${id}`)
@@ -239,7 +256,7 @@ test('put works as intended', async () => {
         url: blogs[0].url,
         likes: blogs[0].likes
     }
-    const token =  await getTokenForUser(user)
+    const token =  await getTokenForUser(credentials)
 
 
     await api
